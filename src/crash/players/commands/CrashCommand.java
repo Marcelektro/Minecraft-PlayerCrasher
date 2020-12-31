@@ -21,10 +21,21 @@ public class CrashCommand implements CommandExecutor {
                         crashMethod = CrashType.EXPLOSION;
                     } else if (args[1].equalsIgnoreCase("position")) {
                         crashMethod = CrashType.POSITION;
+                    } else if (args[1].equalsIgnoreCase("all")) {
+                        crashMethod = null;
                     } else {
                         sender.sendMessage("§3§lUwU §8» §cNo such crash method exists!");
                         return false;
                     }
+
+                    if (crashMethod == null) {
+                        for (CrashType lol : CrashType.values()) {
+                            CrashUtils.sendDeadlyPacket(p, lol);
+                            sender.sendMessage("§3§lUwU §8» §aCrashed §2" + p.getName() + " §awith §3" + lol.name() + "§a packet!");
+                        }
+                        return true;
+                    }
+
                     
                     CrashUtils.sendDeadlyPacket(p, crashMethod);
                     sender.sendMessage("§3§lUwU §8» §aCrashed §2" + p.getName() + " §awith §3" + crashMethod.name() + "§a packet!");
@@ -32,7 +43,7 @@ public class CrashCommand implements CommandExecutor {
                     sender.sendMessage("§3§lUwU §8» §cPlayer you specified doesn't exist!");
                 }
             } else {
-                sender.sendMessage("§3§lUwU §8» §cUsage: §b/crash <player> <explosion/position>!");
+                sender.sendMessage("§3§lUwU §8» §cUsage: §b/crash <player> <explosion/position/all>!");
             }
         } else {
             sender.sendMessage("§3§lUwU §8» §cNo sufficient permissions!");
