@@ -21,7 +21,7 @@ public class CrashUtils {
                         new Vec3D(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE));
 
                 ((CraftPlayer)victim).getHandle().playerConnection.sendPacket(explosionPacket);
-
+                break;
             case POSITION:
                 PacketPlayOutPosition positionPacket = new PacketPlayOutPosition(
                         Double.MAX_VALUE,
@@ -32,6 +32,7 @@ public class CrashUtils {
                         Collections.EMPTY_SET);
 
                 ((CraftPlayer)victim).getHandle().playerConnection.sendPacket(positionPacket);
+                break;
         }
 
     }
