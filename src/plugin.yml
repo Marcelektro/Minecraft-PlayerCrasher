@@ -1,0 +1,7 @@
+name: PlayerCrasher
+main: crash.players.Main
+version: 1.0
+author: Marcelektro
+website: https://discord.marcloud.net/
+commands:
+  crash:
