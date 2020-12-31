@@ -1,4 +1,4 @@
-# MinecraftPlayerCrasher
+# Minecraft Player Crasher
 Crash Minecraft Players XDD
 
 Important: Make good use of it! It's mean to crash innocents :(
