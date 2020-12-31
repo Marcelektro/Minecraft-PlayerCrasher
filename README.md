@@ -3,7 +3,7 @@ Crash Minecraft Players XDD
 
 Important: Make good use of it! It's mean to crash innocents :(
 
-Command usage: /crash <player> <method>
+Command usage: /crash <player> <method>.
 Available methods: explosion, position
 
 Tested on 1.8.9, 1.12.2, 1.16, 1.16.4;
