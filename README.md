@@ -1,6 +1,8 @@
 # Minecraft Player Crasher
 Crash Minecraft Players XDD
 
+You are here probably of this video: https://www.youtube.com/watch?v=nAnpaccFFs4
+
 Important: Make good use of it! It's mean to crash innocents :(
 
 Command usage: /crash (player) (method).
