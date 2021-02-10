@@ -1,6 +1,10 @@
 # Minecraft Player Crasher
 Crash Minecraft Players XDD
 
+WARNING: This plugin works only on 1.8.8 Spigot, in my case I used Paper Spigot.
+It WILL NOT work on other server versions than this without recoding.
+If you want I can make mutli version support, but tell me on my discord (link at the bottom)
+
 You are here probably of this video: https://www.youtube.com/watch?v=nAnpaccFFs4
 
 Important: Make good use of it! It's mean to crash innocents :(
