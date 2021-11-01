@@ -1,5 +1,6 @@
 package crash.players.commands;
 
+import crash.players.Main;
 import crash.players.crasher.CrashType;
 import crash.players.crasher.CrashUtils;
 import org.bukkit.Bukkit;
@@ -11,43 +12,46 @@ import org.bukkit.entity.Player;
 public class CrashCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (sender.hasPermission("core.crash")) {
-            if (args.length == 2) {
-                if (Bukkit.getPlayer(args[0]) != null) {
-                    Player p = Bukkit.getPlayer(args[0]);
-
-                    CrashType crashMethod;
-                    if (args[1].equalsIgnoreCase("explosion")) {
-                        crashMethod = CrashType.EXPLOSION;
-                    } else if (args[1].equalsIgnoreCase("position")) {
-                        crashMethod = CrashType.POSITION;
-                    } else if (args[1].equalsIgnoreCase("all")) {
-                        crashMethod = null;
-                    } else {
-                        sender.sendMessage("§3§lUwU §8» §cNo such crash method exists!");
-                        return false;
-                    }
-
-                    if (crashMethod == null) {
-                        for (CrashType lol : CrashType.values()) {
-                            CrashUtils.sendDeadlyPacket(p, lol);
-                            sender.sendMessage("§3§lUwU §8» §aCrashed §2" + p.getName() + " §awith §3" + lol.name() + "§a packet!");
-                        }
-                        return true;
-                    }
-
-                    
-                    CrashUtils.sendDeadlyPacket(p, crashMethod);
-                    sender.sendMessage("§3§lUwU §8» §aCrashed §2" + p.getName() + " §awith §3" + crashMethod.name() + "§a packet!");
-                } else {
-                    sender.sendMessage("§3§lUwU §8» §cPlayer you specified doesn't exist!");
-                }
-            } else {
-                sender.sendMessage("§3§lUwU §8» §cUsage: §b/crash <player> <explosion/position/all>!");
-            }
-        } else {
-            sender.sendMessage("§3§lUwU §8» §cNo sufficient permissions!");
+        if (!sender.hasPermission("core.crash")) {
+            sender.sendMessage(Main.PREFIX + "§cInsufficient permissions!");
+            return false;
         }
+
+        if (args.length == 2) {
+            Player target = Bukkit.getPlayer(args[0]);
+
+            if (target == null) {
+                sender.sendMessage(Main.PREFIX + "§cPlayer you specified is offline!");
+                return false;
+            }
+
+            String method = args[1];
+
+            // Handle crashing with all methods
+            if (method.equalsIgnoreCase("all")) {
+                for (CrashType crashType : CrashType.values()) {
+                    CrashUtils.crashPlayer(sender, target, crashType);
+
+                }
+                return true;
+            }
+
+            // Handle crashing with specific method
+            CrashType type = CrashType.getFromString(method.toUpperCase());
+
+            if (type != null) {
+                CrashUtils.crashPlayer(sender, target, type);
+                return true;
+            } else {
+                sender.sendMessage(Main.PREFIX + "§cMethod " + method + " doesn't exist!");
+                return false;
+            }
+
+
+        } else {
+            sender.sendMessage(Main.PREFIX + "§cUsage: §b/crash <player> <explosion/position/all>!");
+        }
+
         return true;
     }
 }
