@@ -29,6 +29,10 @@ public class CrashUtils {
     static Class<?> packetPlayOutSpawnEntityLivingClass;
     static Class<?> entityLivingClass;
 
+    // Class imports for sending the Entity packet.
+    static Class<?> craftPlayer;
+    static Class<?> Packet;
+
     static {
         String path = Bukkit.getServer().getClass().getPackage().getName();
         serverVersion = path.substring(path.lastIndexOf(".") + 1);
@@ -44,6 +48,9 @@ public class CrashUtils {
             worldClass = Class.forName("net.minecraft.server." + serverVersion + ".World");
             packetPlayOutSpawnEntityLivingClass = Class.forName("net.minecraft.server." + serverVersion + ".PacketPlayOutSpawnEntityLiving");
             entityLivingClass = Class.forName("net.minecraft.server." + serverVersion + ".EntityLiving");
+
+            craftPlayer = Class.forName("org.bukkit.craftbukkit." + serverVersion + ".entity.CraftPlayer");
+            Packet = Class.forName("net.minecraft.server." + serverVersion + ".Packet");
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -119,15 +126,12 @@ public class CrashUtils {
      * @throws Exception when something goes wrong
      */
     private static void sendPacket(Player player, Object packet) throws Exception {
-
-        Class<?> craftPlayer = Class.forName("org.bukkit.craftbukkit." + serverVersion + ".entity.CraftPlayer");
         Object craftPlayerObject = craftPlayer.cast(player);
 
         Method getHandleMethod = craftPlayer.getMethod("getHandle");
         Object handle = getHandleMethod.invoke(craftPlayerObject);
         Object pc = handle.getClass().getField("playerConnection").get(handle);
 
-        Class<?> Packet = Class.forName("net.minecraft.server." + serverVersion + ".Packet");
         Method sendPacketMethod = pc.getClass().getMethod("sendPacket", Packet);
 
         sendPacketMethod.invoke(pc, packet);
