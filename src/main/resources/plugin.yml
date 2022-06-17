@@ -1,7 +1,7 @@
 name: PlayerCrasher
-main: crash.players.Main
 version: 1.0
-author: Marcelektro
+main: crash.players.Main
+authors: [ Marcelektro, Bram1903 ]
 website: https://discord.marcloud.net/
 commands:
   crash:

