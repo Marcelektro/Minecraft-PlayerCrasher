@@ -7,11 +7,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 /**
  * Hello! :D
  * Welcome to my Crasher Plugin XD
- *
+ * <p>
  * You can do anything you want to do with it :D
- *
+ * <p>
  * Just don't crash good people, only these bad ^^
- *
+ * <p>
  * Have fun!
  * Marcelektro
  */

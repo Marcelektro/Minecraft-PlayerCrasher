@@ -2,7 +2,8 @@ package crash.players.crasher;
 
 public enum CrashType {
     EXPLOSION,
-    POSITION;
+    POSITION,
+    ENTITY;
 
     public static CrashType getFromString(String s) {
 

@@ -49,7 +49,7 @@ public class CrashCommand implements CommandExecutor {
 
 
         } else {
-            sender.sendMessage(Main.PREFIX + "§cUsage: §b/crash <player> <explosion/position/all>!");
+            sender.sendMessage(Main.PREFIX + "§cUsage: §b/crash <player> <explosion/position/entity/all>!");
         }
 
         return true;
